@@ -1,0 +1,34 @@
+#STAGE 1
+# base image
+FROM python:3.9-slim AS builder
+
+#creating working directory for container
+WORKDIR /appcontainer
+
+#COPY the content from local to container directory
+COPY . .
+
+#installing dependencies from given file and storing them at a designated directory
+RUN pip install -r requirements.txt --target=/appcontainer/deps
+
+#STAGE 2
+#fetching image from google container repository
+
+FROM gcr.io/distroless/python3-debian12 
+
+#creating a new working directory from distroless image container
+WORKDIR /newappcontainer
+
+#copy the dependencies from target to distroless image container
+COPY --from=builder /appcontainer/deps /newappcontainer
+#copy the application files from old container directory to new container directory
+COPY --from=builder /appcontainer .
+
+#enviroment path for python
+ENV PYTHONPATH="/newappcontainer"
+
+#expose port
+EXPOSE 80
+
+#serving the container 
+CMD ["run.py"]
