@@ -25,7 +25,7 @@ COPY --from=builder /appcontainer/deps /newappcontainer
 COPY --from=builder /appcontainer .
 
 #enviroment path for python
-ENV PYTHONPATH="/newappcontainer"
+ENV PYTHONPATH="/newappcontainer/deps"
 
 #expose port
 EXPOSE 80
