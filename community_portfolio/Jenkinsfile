@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+     environment {
+        PATH = "/usr/local/bin:/usr/bin:/bin:${env.PATH}"
+    }
+
+    stages {
+        stage('Code Clone') {
+            steps {
+                git url :"https://github.com/Rahul462000/practice.git", branch: "main"
+            }
+        }
+        stage('Docker build'){
+            steps{
+                echo "this step will build docker image"
+                sh "docker build -t node-app ./community_portfolio"
+                
+                echo "Stopping old container (if running)..."
+                sh "docker rm -f node_application || true"
+                
+                echo "Starting container ............."
+                sh "docker run -d -p 3000:3000 --name node_application node-app "
+            }
+        }
+    }
+}
